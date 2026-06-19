@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#160f2b" />
+  <meta name="description" content="光陰魔法圖書館 — 一場為你而設的解謎冒險" />
+  <title>光陰魔法圖書館</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="stars" aria-hidden="true"></div>
+  <main id="app" role="main"></main>
+
+  <!-- 全域 UI：碎片欄 / 提示 / 靜音 -->
+  <div id="hud" class="hud hidden">
+    <button id="hud-home" class="hud-btn" title="回到圖書館大廳" aria-label="回到大廳">⌂</button>
+    <div id="fragbar" class="fragbar" title="符文碎片"></div>
+    <button id="hud-mute" class="hud-btn" title="開關音效" aria-label="開關音效">♪</button>
+  </div>
+
+  <!-- 彈窗 / Toast 容器 -->
+  <div id="overlay" class="overlay hidden"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

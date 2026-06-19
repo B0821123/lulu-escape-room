@@ -1,0 +1,8 @@
+# 開發工具（本地測試伺服器、編輯器設定），不需上傳
+.claude/
+node_modules/
+
+# 系統檔
+.DS_Store
+Thumbs.db
+*.log
