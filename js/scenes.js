@@ -1,5 +1,5 @@
 /* 故事與場景定義：同一本《告白之書》的三段記憶。
-   六個指定答案分別作為必解印記，三段記憶完成後開啟終局。 */
+   指定答案分別作為必解印記，三段記憶完成後開啟終局。 */
 import { config } from "./config.js";
 
 const answers = config.answers || {};
@@ -16,20 +16,19 @@ export function fmtDate(value) {
   return `${+mmdd.slice(0, 2)} 月 ${+mmdd.slice(2)} 日`;
 }
 
-/* 主線前四關給出的頁角印記，依序串成 1455436。 */
+/* 主線三枚頁角印記，依序串成 1455436。 */
 export const PALACE = {
   m1: { name: "第一頁角", digit: "14" },
   m2: { name: "第二頁角", digit: "55" },
-  m3: { name: "第三頁角", digit: "4" },
-  m4: { name: "第四頁角", digit: "36" },
+  m4: { name: "第三頁角", digit: "436" },
 };
-export const M5_ORDER = ["m1", "m2", "m3", "m4"];
+export const M5_ORDER = ["m1", "m2", "m4"];
 export const M5_CODE = answers.mainSeal || "1455436";
 
 export const PATHS = {
-  main: { ids: ["m1", "m2", "m3", "m4", "m5"], fragment: "main", title: "告白之書 · 此刻的星圖", icon: "✦" },
-  A:    { ids: ["a1", "a2"],                    fragment: "A",    title: "告白之書 · 第一頁的日期", icon: "❂" },
-  B:    { ids: ["b1", "b2", "b3"],              fragment: "B",    title: "告白之書 · 心意的回聲", icon: "❖" },
+  main: { ids: ["m1", "m2", "m4", "m5"], fragment: "main", title: "告白之書 · 此刻的星圖", icon: "✦" },
+  A:    { ids: ["a1"],                    fragment: "A",    title: "告白之書 · 第一頁的日期", icon: "❂" },
+  B:    { ids: ["b1", "b2", "b3"],       fragment: "B",    title: "告白之書 · 心意的回聲", icon: "❖" },
 };
 
 export const COVER = {
@@ -106,43 +105,17 @@ export const SCENES = {
       `三位數印記是：${LOGIC_SEAL}`,
     ],
   },
-  m3: {
-    chapter: "main", kicker: "此刻的星圖 · 印記三", title: "星盤<span class='glow'>對齊</span>",
-    intro: [
-      "塔後懸著一面青銅星盤，三圈星環映出日、月與指路的星。",
-      "「把它們轉回該在的位置，」守書人說，「星星會吐出下一枚頁角。」",
-    ],
-    puzzle: { name: "astrolabe", params: {
-      reveal: String(PALACE.m3.digit),
-      rings: [
-        { symbols: ["☉", "☾", "✦", "❂", "☆", "✧", "✶", "✷"], target: 0 },
-        { symbols: ["✧", "☽", "✦", "✶", "☆", "❂", "✷", "☉"], target: 1 },
-        { symbols: ["✦", "✶", "★", "☆", "✧", "❂", "✷", "☽"], target: 2 },
-      ],
-    }},
-    reward: PALACE.m3,
-    parchment: { title: "星盤銘文", body: "「外環獻給白晝給光者；中環屬於夜裡盈虧之物；內環，指引迷途旅人歸航。」" },
-    outro: [
-      "三環歸位，星盤中央亮起一顆溫柔的綠光。",
-      "「有些方向不需要地圖，因為心會一直記得要往哪裡走。」",
-    ],
-    hints: [
-      "外環＝太陽 ☉、中環＝月亮 ☽、內環＝北極星 ★。",
-      "用手指轉動星環，讓指定符號停在頂端粉色指針。",
-      `全部對齊後，中央會浮現數字 ${PALACE.m3.digit}。`,
-    ],
-  },
   m4: {
-    chapter: "main", kicker: "此刻的星圖 · 印記四", title: "殘缺的<span class='glow'>符文陣</span>",
+    chapter: "main", kicker: "此刻的星圖 · 印記三", title: "殘缺的<span class='glow'>符文陣</span>",
     intro: [
-      "星盤之後，一面九宮符文牆擋住去路，最後一格被誰悄悄擦掉了。",
-      "「把規律補回來，」守書人說，「這一頁的四個角就會完整。」",
+      "書塔的光落在前方，一面九宮符文牆擋住去路，最後一格被誰悄悄擦掉了。",
+      "「把規律補回來，」守書人說，「剩下的頁角印記會一起完整。」",
     ],
     puzzle: { name: "patternMatrix", params: {} },
     reward: PALACE.m4,
     outro: [
       "缺口被補上，整面牆像翻頁般掀起金光。",
-      "「四個頁角到齊，星圖廊只剩最後一道合鑰。」",
+      "「三枚頁角到齊，星圖廊只剩最後一道合鑰。」",
     ],
     hints: [
       "把每個圓點想成開/關；觀察第三格如何由前兩格產生。",
@@ -153,17 +126,17 @@ export const SCENES = {
   m5: {
     chapter: "main", kicker: "此刻的星圖 · 合鑰", title: "七位<span class='glow'>頁角合鑰</span>",
     intro: [
-      "星圖廊盡頭，四枚頁角印記懸在石鎖前。",
+      "星圖廊盡頭，三枚頁角印記懸在石鎖前。",
       "「照著你拿到它們的順序，把印記串成七位合鑰。這一段『此刻』就會回到書裡。」",
     ],
     extra: "m5digits",
-    puzzle: { name: "comboLock", params: { length: M5_CODE.length, expected: M5_CODE, prompt: "依四枚頁角印記輸入七位合鑰" } },
+    puzzle: { name: "comboLock", params: { length: M5_CODE.length, expected: M5_CODE, prompt: "依三枚頁角印記輸入七位合鑰" } },
     outro: [
       "石鎖喀地一聲鬆開，星圖廊化作一枚符文碎片，落入你掌心。",
     ],
     hints: [
-      "依序讀取前四關取得的頁角印記。",
-      "第一頁角 → 第二頁角 → 第三頁角 → 第四頁角。",
+      "依序讀取前面取得的三枚頁角印記。",
+      "第一頁角 → 第二頁角 → 第三頁角。",
       `七位合鑰是：${M5_CODE}`,
     ],
   },
@@ -177,7 +150,7 @@ export const SCENES = {
     parchment: { title: "沙漏的低語", body: "以八位數寫下那一天：YYYYMMDD。" },
     puzzle: { name: "comboLock", params: { length: FIRST_DATE.length, expected: FIRST_DATE, prompt: "輸入第一頁日期（YYYYMMDD）" } },
     outro: [
-      `沙漏在 ${fmtDate(FIRST_DATE)} 停住，門後傳來紙頁展開的聲音。`,
+      `沙漏在 ${fmtDate(FIRST_DATE)} 停住，第一頁的日期凝成第二枚符文碎片。`,
       "「你看，時間不是只往前走；它也會在重要的地方，替你留一盞燈。」",
     ],
     hints: [
@@ -186,24 +159,6 @@ export const SCENES = {
       `答案是：${FIRST_DATE}`,
     ],
   },
-  a2: {
-    chapter: "A", kicker: "第一頁的日期 · 記憶", title: "破碎的<span class='glow'>記憶</span>",
-    intro: [
-      "日期門打開後，一段畫面從書頁裡散成九片。",
-      "「把它拼回來吧，」守書人說，「第一頁的記憶會自己承認你。」",
-    ],
-    puzzle: { name: "slidingPuzzle", params: {} },
-    outro: [
-      "畫面重新清晰，時之沙漏凝成第二枚符文碎片。",
-      "「一切開始的那一天，已經回到書裡。」",
-    ],
-    hints: [
-      "先把四個角落歸位，再處理邊與中間。",
-      "點一下空格相鄰的方塊，它就會滑進空格。",
-      "卡住時，整排整排地推，比單塊亂移有效。",
-    ],
-  },
-
   b1: {
     chapter: "B", kicker: "心意的回聲 · 印記六", title: "回聲<span class='glow'>暗號</span>",
     intro: [

@@ -118,8 +118,8 @@ function renderExtra(name, host) {
       body.appendChild(h("p", {}, `${PALACE[k].name}印記：`, h("b", { style: { color: "#e8c178", fontSize: "20px" } }, got != null ? String(got) : "？")));
     }
     host.appendChild(h("div", { class: "parchment" },
-      h("h3", {}, "四枚頁角印記"), body,
-      h("div", { class: "clue" }, "排列之序：第一頁角 → 第二頁角 → 第三頁角 → 第四頁角。")));
+      h("h3", {}, "三枚頁角印記"), body,
+      h("div", { class: "clue" }, "排列之序：第一頁角 → 第二頁角 → 第三頁角。")));
   }
 }
 
