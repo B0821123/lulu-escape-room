@@ -263,8 +263,8 @@ select.magic {
 .opt-cell.sel { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold) inset; }
 
 /* 滑塊拼圖 */
-.slide-grid { display: grid; gap: 4px; width: min(82vw, 312px); aspect-ratio: 1; }
-.slide-tile { border-radius: 6px; background-size: cover; background-position: center; position: relative; }
+.slide-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4px; width: min(82vw, 312px); aspect-ratio: 1; margin: 0 auto; }
+.slide-tile { border-radius: 6px; background-size: 300% 300%; background-position: center; position: relative; min-width: 0; min-height: 0; }
 .slide-tile.blank { background: transparent !important; }
 .slide-tile .num { position: absolute; top: 4px; left: 6px; font-size: 12px; color: rgba(255,255,255,.85); text-shadow: 0 1px 2px #000; }
 
