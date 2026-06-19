@@ -1,4 +1,4 @@
-import { cipherWheel } from "./cipherWheel.js";
+import { cryptex } from "./cryptex.js";
 import { logicGrid } from "./logicGrid.js";
 import { astrolabe } from "./astrolabe.js";
 import { patternMatrix } from "./patternMatrix.js";
@@ -8,6 +8,6 @@ import { lightMaze } from "./lightMaze.js";
 import { comboLock } from "./comboLock.js";
 
 export const PUZZLES = {
-  cipherWheel, logicGrid, astrolabe, patternMatrix,
+  cryptex, logicGrid, astrolabe, patternMatrix,
   slidingPuzzle, morse, lightMaze, comboLock,
 };
