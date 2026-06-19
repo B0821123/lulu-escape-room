@@ -37,8 +37,7 @@ export function morse(host, params, ctx) {
   host.appendChild(h("div", { class: "puzzle" },
     h("div", { class: "parchment" },
       h("h3", {}, "回聲迴廊"),
-      h("p", {}, "迴廊深處有一盞會說話的燈，用古老的點與劃，一遍遍呼喚著一個名字。聽懂它在叫誰。"),
-      h("div", { class: "cipher-text", style: { fontSize: "22px", letterSpacing: ".1em" } }, code.replace(/\./g, "·").replace(/-/g, "—")),
+      h("p", {}, "迴廊深處有一盞會說話的燈，用古老的點與劃，一遍遍呼喚著一個名字。注視它的明滅，聽懂它在叫誰。"),
     ),
     h("div", { class: "puzzle-stage" }, lamp),
     h("div", { class: "btn-row" },
@@ -50,4 +49,7 @@ export function morse(host, params, ctx) {
     h("div", { class: "field-label" }, "它呼喚的名字是？"),
     input, h("div", { class: "spacer" }), submit,
   ));
+
+  // 進場後自動閃一次光訊（即使靜音也看得到燈號），之後可按鈕重播
+  setTimeout(play, 800);
 }
