@@ -126,6 +126,8 @@ button { font-family: var(--serif); cursor: pointer; }
   text-transform: uppercase;
 }
 .answer-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(232,193,120,.18); }
+.answer-input.phrase-input { font-size: 21px; letter-spacing: .08em; }
+.answer-input.compact-input { letter-spacing: .16em; }
 .field-label { font-size: 13px; color: var(--gold); letter-spacing: .15em; margin: 14px 0 6px; }
 
 /* 數字鎖鍵盤 */
@@ -137,13 +139,13 @@ button { font-family: var(--serif); cursor: pointer; }
 }
 .keypad button:active { background: rgba(232,193,120,.2); }
 .code-display {
-  display: flex; gap: 10px; justify-content: center; margin: 6px 0 4px;
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 6px 0 4px;
 }
 .code-slot {
-  width: 46px; height: 58px; border-radius: 10px;
+  width: clamp(30px, 9vw, 46px); height: 56px; border-radius: 10px;
   border: 1px solid var(--line); background: rgba(0,0,0,.3);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--display); font-size: 26px; color: var(--gold);
+  font-family: var(--display); font-size: clamp(20px, 6vw, 26px); color: var(--gold);
 }
 .code-slot.filled { border-color: var(--gold); box-shadow: 0 0 12px rgba(232,193,120,.3) inset; }
 
@@ -229,6 +231,11 @@ button { font-family: var(--serif); cursor: pointer; }
 /* 咒語密碼筒（Cryptex + 鴿籠密碼） */
 .cryptex { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .dial { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dial-space { width: 18px; height: 148px; flex: 0 0 18px; position: relative; }
+.dial-space::after {
+  content: ""; position: absolute; left: 50%; top: 58px; bottom: 34px;
+  border-left: 1px dashed rgba(232,193,120,.5);
+}
 .dial-glyph { width: 42px; height: 42px; display: grid; place-items: center; margin-bottom: 2px; }
 .dial-arrow {
   width: 46px; height: 28px; border-radius: 8px; color: var(--gold);
@@ -306,9 +313,39 @@ select.magic {
   border: 1px solid #cdb583;
 }
 .letter h2 { color: #6b4a1c; text-align: center; }
+.editable-letter {
+  margin: 16px 0; padding: 14px 0;
+  border-top: 1px solid rgba(90,63,28,.22);
+  border-bottom: 1px solid rgba(90,63,28,.22);
+}
 .photos { display: grid; gap: 10px; margin-top: 16px; }
 .photos img { width: 100%; border-radius: 12px; border: 1px solid var(--line); display: block; }
 .hearts { font-size: 26px; letter-spacing: .2em; text-align: center; margin: 14px 0; }
+
+/* 終局獻祭：凹槽與碎片 */
+.socket-row { display: flex; gap: 14px; justify-content: center; margin: 18px 0 6px; }
+.socket {
+  width: 78px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.socket-glyph {
+  width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%;
+  font-size: 30px; color: var(--gold); border: 2px dashed var(--line); background: rgba(0,0,0,.25);
+  transition: all .4s ease;
+}
+.socket.filled .socket-glyph {
+  border-style: solid; border-color: var(--gold);
+  background: radial-gradient(circle, rgba(232,193,120,.3), transparent);
+  box-shadow: 0 0 20px rgba(232,193,120,.6);
+}
+.socket-label { font-size: 13px; color: var(--ink-dim); }
+.token-row { display: flex; gap: 16px; justify-content: center; margin-top: 16px; }
+.frag-token {
+  width: 64px; height: 64px; border-radius: 50%; font-size: 30px; color: var(--gold);
+  background: radial-gradient(circle, rgba(143,123,255,.25), rgba(20,14,40,.9));
+  border: 1px solid var(--gold-soft); box-shadow: 0 6px 18px rgba(0,0,0,.4);
+}
+.frag-token:active { transform: scale(.94); }
+.frag-token.used { opacity: 0; transform: scale(.4); pointer-events: none; transition: all .5s ease; }
 
 .fade-in { animation: fadeIn .5s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -319,4 +356,16 @@ select.magic {
 
 @media (min-width: 480px) {
   .scene-title { font-size: 30px; }
+}
+
+@media (max-width: 380px) {
+  #app { padding-left: 14px; padding-right: 14px; }
+  .path-card { gap: 10px; padding: 14px; }
+  .path-card .icon { width: 38px; font-size: 26px; }
+  .path-card .meta .t { font-size: 16px; }
+  .path-card .status { font-size: 12px; }
+  .btn { padding-left: 16px; padding-right: 16px; }
+  .dial-arrow, .dial-letter { width: 42px; }
+  .dial-letter { height: 48px; font-size: 24px; }
+  .letter-picker { grid-template-columns: repeat(5, 1fr); }
 }

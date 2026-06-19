@@ -1,6 +1,6 @@
 /* 遊戲狀態 + localStorage 持久化（鎖屏/重整不丟進度） */
 
-const SAVE_KEY = "lulu_lib_save_v1";
+const SAVE_KEY = "lulu_lib_save_v2";
 
 const fresh = () => ({
   started: false,

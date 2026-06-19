@@ -1,5 +1,5 @@
 /* M1 — 咒語密碼筒（Cryptex + 鴿籠密碼 Pigpen）
-   石筒上方每個符號＝一個字母（鴿籠密碼）。轉動滾輪拼出 config.spell 即解封。
+   石筒上方每個符號＝一個字母（鴿籠密碼）。空格只作片語分隔，不需轉動。
    刻意「不顯示每輪對錯」，必須真的把符號讀懂。 */
 import { h, modal, toast } from "../ui.js";
 import { sfx } from "../audio.js";
@@ -70,12 +70,20 @@ function openPicker(cb) {
 }
 
 export function cryptex(host, params, ctx) {
-  const spell = (ctx.config.spell || "FOREVER").toUpperCase().replace(/[^A-Z]/g, "") || "FOREVER";
+  const phrase = (params.answer || ctx.config.answers?.luluPiggy || ctx.config.spell || "LULU PIGGY").toUpperCase();
+  const spell = phrase.replace(/[^A-Z]/g, "") || "LULUPIGGY";
+  const tokens = [...phrase].filter(ch => /[A-Z\s]/.test(ch));
   const letters = Array(spell.length).fill("A");
   const letterEls = [];
 
   const row = h("div", { class: "cryptex" });
-  for (let i = 0; i < spell.length; i++) {
+  let letterIndex = 0;
+  for (const token of tokens) {
+    if (token === " ") {
+      row.appendChild(h("div", { class: "dial-space", title: "片語空格" }, " "));
+      continue;
+    }
+    const i = letterIndex++;
     const letterEl = h("div", { class: "dial-letter", onclick: () => openPicker(v => { letters[i] = v; refresh(); }) }, "A");
     letterEls.push(letterEl);
     row.appendChild(h("div", { class: "dial" },
@@ -96,8 +104,8 @@ export function cryptex(host, params, ctx) {
   host.appendChild(h("div", { class: "puzzle" },
     h("div", { class: "parchment" },
       h("h3", {}, "咒語密碼筒"),
-      h("p", {}, "石筒上方刻著一排古老符號，每個符號代表一個英文字母。轉動下方的滾輪拼出失落的咒語，封印就會鬆開。"),
-      h("p", { class: "muted", style: { fontSize: "13px" } }, "※ 滾輪不會提示對錯——你得真的把符號讀懂。點字母可快速選字。"),
+      h("p", {}, "石筒上方刻著一排古老符號，每個符號代表一個英文字母。轉動下方的滾輪拼出失落的片語，封印就會鬆開。"),
+      h("p", { class: "muted", style: { fontSize: "13px" } }, "※ 空白是片語分隔，不用轉。滾輪不會提示對錯；點字母可快速選字。"),
     ),
     h("div", { class: "puzzle-stage" }, row),
     submit,

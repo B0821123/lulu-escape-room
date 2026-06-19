@@ -4,7 +4,7 @@ import { state, save, isSolved, markSolved, grantReward, earnFragment, allFragme
 import { h, $, toast, modal, openHints, renderFragbar, showHud } from "./ui.js";
 import { sfx, ensureAudio } from "./audio.js";
 import { PUZZLES } from "./puzzles/index.js";
-import { SCENES, PATHS, PALACE, COVER, HUB, FINALE } from "./scenes.js";
+import { SCENES, PATHS, PALACE, M5_ORDER, COVER, HUB, FINALE, fmtDate } from "./scenes.js";
 
 const app = () => $("#app");
 const DEV = new URLSearchParams(location.search).has("dev");
@@ -62,11 +62,12 @@ function renderHub() {
     const solved = p.ids.filter(isSolved).length;
     const done = state.fragments[p.fragment];
     const firstUnsolved = p.ids.find(id => !isSolved(id)) || p.ids[0];
+    const detail = done ? "已尋回符文碎片" : (p.ids.length > 1 ? `進度 ${solved} / ${p.ids.length}` : "尚未尋回");
     paths.appendChild(h("button", { class: "path-card " + (done ? "done" : ""), onclick: () => go(firstUnsolved) },
       h("div", { class: "icon" }, p.icon),
       h("div", { class: "meta" },
         h("div", { class: "t" }, p.title),
-        h("div", { class: "d" }, done ? "已尋回符文碎片" : `進度 ${solved} / ${p.ids.length}`)),
+        h("div", { class: "d" }, detail)),
       h("div", { class: "status" }, done ? "✓ 完成" : "進入 →"),
     ));
   }
@@ -86,7 +87,7 @@ function renderHub() {
 
 /* ---------- 一般謎題場景 ---------- */
 function renderScene(id) {
-  const scene = SCENES[id];
+  const scene = { id, ...SCENES[id] };
   showHud(true); renderFragbar();
   const a = app(); a.innerHTML = "";
   const wrap = h("div", { class: "fade-in" });
@@ -112,39 +113,52 @@ function renderScene(id) {
 function renderExtra(name, host) {
   if (name === "m5digits") {
     const body = h("div", { class: "story" });
-    for (const k of ["m1", "m2", "m3", "m4"]) {
+    for (const k of M5_ORDER) {
       const got = state.rewards[k];
-      body.appendChild(h("p", {}, `${PALACE[k].name}之數：`, h("b", { style: { color: "#e8c178", fontSize: "20px" } }, got != null ? String(got) : "？")));
+      body.appendChild(h("p", {}, `${PALACE[k].name}印記：`, h("b", { style: { color: "#e8c178", fontSize: "20px" } }, got != null ? String(got) : "？")));
     }
     host.appendChild(h("div", { class: "parchment" },
-      h("h3", {}, "四宮數字符文"), body,
-      h("div", { class: "clue" }, "排列之序——由暗至明：玄武 → 青龍 → 白虎 → 朱雀。")));
+      h("h3", {}, "四枚頁角印記"), body,
+      h("div", { class: "clue" }, "排列之序：第一頁角 → 第二頁角 → 第三頁角 → 第四頁角。")));
   }
 }
 
 /* ---------- 解開一關 ---------- */
 function onSolve(id) {
   const scene = SCENES[id];
-  if (isSolved(id)) { /* 重玩，照常前進 */ }
   markSolved(id);
-  if (scene.reward) { grantReward(id, scene.reward.digit); toast(`${scene.reward.name}之數「${scene.reward.digit}」浮現`, "ok"); }
+  if (scene.reward) grantReward(id, scene.reward.digit);
   sfx.good();
 
   const p = pathOf(id);
   const idx = p.ids.indexOf(id);
-  if (idx < p.ids.length - 1) {
-    setTimeout(() => go(p.ids[idx + 1]), scene.reward ? 1100 : 600);
-  } else {
+  const last = idx === p.ids.length - 1;
+  if (last) {
     earnFragment(p.fragment); renderFragbar();
-    setTimeout(() => fragmentModal(p), 700);
+    setTimeout(() => fragmentModal(p, scene), 600);
+  } else if (scene.outro) {
+    setTimeout(() => keeperModal(scene, () => go(p.ids[idx + 1])), 400);
+  } else {
+    setTimeout(() => go(p.ids[idx + 1]), 500);
   }
 }
 
-function fragmentModal(p) {
+/* 守書人的過場旁白（謎題之間的故事銜接） */
+function keeperModal(scene, cb) {
   modal((body, close) => {
+    (scene.outro || []).forEach(t => body.appendChild(h("p", { class: "story", html: t })));
+    if (scene.reward) body.appendChild(h("p", { class: "center", style: { color: "#e8c178", marginTop: "8px" } }, `（書頁浮現 ${scene.reward.name}印記「${scene.reward.digit}」）`));
+    body.appendChild(h("div", { class: "spacer" }));
+    body.appendChild(h("button", { class: "btn", onclick: () => { close(); cb(); } }, "繼續 →"));
+  }, { title: "📖 守書人", dismissable: false });
+}
+
+function fragmentModal(p, scene) {
+  modal((body, close) => {
+    if (scene && scene.outro) scene.outro.forEach(t => body.appendChild(h("p", { class: "story", html: t })));
     body.appendChild(h("div", { class: "center", style: { fontSize: "48px" } }, p.icon));
-    body.appendChild(h("p", { class: "center story" }, `你尋回了一枚符文碎片！`));
-    body.appendChild(h("p", { class: "center muted" }, allFragments() ? "三枚到齊——《告白之書》的封印已經鬆動。" : `${[...Object.values(state.fragments)].filter(Boolean).length} / 3 枚`));
+    body.appendChild(h("p", { class: "center story" }, "這段記憶凝成了一枚符文碎片。"));
+    body.appendChild(h("p", { class: "center muted" }, allFragments() ? "三段記憶到齊——《告白之書》的封印鬆動了。" : `已尋回 ${[...Object.values(state.fragments)].filter(Boolean).length} / 3 段`));
     const btn = h("button", { class: "btn", onclick: () => { close(); allFragments() ? go("finale") : go("hub"); } }, allFragments() ? "前往終局 📖" : "回到大廳");
     body.appendChild(h("div", { class: "spacer" })); body.appendChild(btn);
   }, { title: "✦ 符文碎片", dismissable: false });
@@ -165,13 +179,34 @@ function renderFinale() {
   wrap.appendChild(h("div", { class: "kicker" }, FINALE.kicker));
   wrap.appendChild(h("h2", { class: "scene-title", style: { textAlign: "center" } }, h("span", { class: "glow" }, FINALE.title)));
   wrap.appendChild(h("div", { class: "story" }, ...FINALE.intro.map(t => h("p", { html: t }))));
-  wrap.appendChild(h("div", { class: "hearts" }, "✦   ❂   ❖"));
-  wrap.appendChild(h("button", { class: "btn ghost small", onclick: () => openHints(FINALE) }, "🔮 需要提示"));
-  const host = h("div", {});
-  wrap.appendChild(host);
-  a.appendChild(wrap);
 
-  PUZZLES.comboLock(host, FINALE.lock, { config, solve: revealLetter });
+  // 三道凹槽
+  const socketEls = FINALE.sockets.map(lb => h("div", { class: "socket" },
+    h("span", { class: "socket-glyph" }, ""), h("div", { class: "socket-label" }, lb)));
+  wrap.appendChild(h("div", { class: "socket-row" }, ...socketEls));
+  wrap.appendChild(h("div", { class: "note" }, "輕觸下方的符文碎片，把它們一一放回書台。"));
+
+  // 三枚碎片，依序嵌入任一空槽
+  const seated = FINALE.sockets.map(() => null);
+  let placed = 0, done = false;
+  const tokenRow = h("div", { class: "token-row" });
+  FINALE.fragments.forEach(f => {
+    const tok = h("button", { class: "frag-token" }, f.glyph);
+    tok.onclick = () => {
+      if (done || tok.disabled) return;
+      const slot = seated.findIndex(x => x === null);
+      if (slot < 0) return;
+      seated[slot] = f.glyph;
+      socketEls[slot].querySelector(".socket-glyph").textContent = f.glyph;
+      socketEls[slot].classList.add("filled");
+      tok.disabled = true; tok.classList.add("used");
+      sfx.tap(); placed++;
+      if (placed === FINALE.fragments.length) { done = true; sfx.unlock(); setTimeout(revealLetter, 1000); }
+    };
+    tokenRow.appendChild(tok);
+  });
+  wrap.appendChild(tokenRow);
+  a.appendChild(wrap);
   renderDev();
 }
 
@@ -182,7 +217,12 @@ function revealLetter() {
   const f = config.finale;
   const letter = h("div", { class: "letter fade-in" });
   letter.appendChild(h("h2", {}, f.title));
-  for (const para of f.message) letter.appendChild(h("p", {}, para));
+  letter.appendChild(h("p", {}, "三枚符文碎片嵌回書脊後，散落的頁碼終於排成完整的一章。"));
+  letter.appendChild(h("p", {}, "守書人把書推到你面前，微笑著退到星光裡：「故事到這裡，該交給寫下它的人了。」"));
+  const editable = h("div", { class: "editable-letter" });
+  for (const para of f.message) editable.appendChild(h("p", {}, para));
+  letter.appendChild(editable);
+  letter.appendChild(h("p", {}, "讀完最後一行時，圖書館沒有關門。它只是把燈留著，等你們一起把下一頁寫下去。"));
   letter.appendChild(h("p", { style: { textAlign: "right", marginTop: "18px" } }, "— " + (f.signature || config.author)));
 
   const wrap = h("div", { class: "finale-book" },
@@ -196,7 +236,8 @@ function revealLetter() {
   } else {
     wrap.appendChild(h("div", { class: "hearts fade-in" }, "❤  ❤  ❤"));
   }
-  if (f.finalNote) wrap.appendChild(h("p", { class: "center", style: { color: "#e8c178", marginTop: "14px" } }, f.finalNote));
+  wrap.appendChild(h("p", { class: "center", style: { color: "#e8c178", marginTop: "16px", fontSize: "18px" } }, `🎂 ${fmtDate(config.birthday)} · 生日快樂`));
+  if (f.finalNote) wrap.appendChild(h("p", { class: "center muted", style: { marginTop: "6px" } }, f.finalNote));
   wrap.appendChild(h("button", { class: "btn ghost", style: { marginTop: "18px" }, onclick: () => go("hub") }, "回到圖書館"));
   app().appendChild(wrap);
   showHud(true); renderFragbar();
