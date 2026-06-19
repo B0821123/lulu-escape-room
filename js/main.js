@@ -236,7 +236,7 @@ function revealLetter() {
   } else {
     wrap.appendChild(h("div", { class: "hearts fade-in" }, "❤  ❤  ❤"));
   }
-  wrap.appendChild(h("p", { class: "center", style: { color: "#e8c178", marginTop: "16px", fontSize: "18px" } }, `🎂 ${fmtDate(config.birthday)} · 生日快樂`));
+  wrap.appendChild(h("p", { class: "center", style: { color: "#e8c178", marginTop: "16px", fontSize: "18px" } }, `寶貝 生日快樂`));
   if (f.finalNote) wrap.appendChild(h("p", { class: "center muted", style: { marginTop: "6px" } }, f.finalNote));
   wrap.appendChild(h("button", { class: "btn ghost", style: { marginTop: "18px" }, onclick: () => go("hub") }, "回到圖書館"));
   app().appendChild(wrap);
