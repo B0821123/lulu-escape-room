@@ -60,7 +60,7 @@ export function morse(host, params, ctx) {
     ),
     h("div", { class: "puzzle-stage" }, lamp),
     h("div", { class: "btn-row" },
-      h("button", { class: "btn ghost small", onclick: play }, "▶ 重播光訊"),
+      h("button", { class: "btn ghost small", onclick: play }, "▶ 播放光訊"),
     ),
     h("details", { style: { marginTop: "12px" } },
       h("summary", { class: "muted", style: { cursor: "pointer" } }, "攤開摩斯密碼表"),
@@ -70,6 +70,4 @@ export function morse(host, params, ctx) {
     h("div", { class: "spacer" }),
     submit,
   ));
-
-  setTimeout(play, 800);
 }

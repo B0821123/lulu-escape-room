@@ -12,6 +12,11 @@ export const config = {
   hero:   "Lulu",          // 玩家（壽星）的名字
   author: "我",            // 你（送禮的人）對自己的稱呼，用於告白署名
 
+  // —— 背景音樂 ——
+  // enabled：是否播放循環背景音樂（程式合成、無外部檔案）。
+  // volume：音樂音量（0～1，建議 0.04～0.10，壓低才不會蓋過音效）。
+  music: { enabled: true, volume: 0.07 },
+
   // —— 重要日子 ——
   // 生日（終局《告白之書》翻開時會顯示的生日標記，格式四位數 MMDD）
   birthday: "0622",
@@ -22,7 +27,7 @@ export const config = {
   answers: {
     luluPiggy: "LULU PIGGY",
     bobo: "BOBO",
-    rabbitFood: "RABBIT FOOD",
+    rabbitFood: "RABBIT POOP",
     mainSeal: "1455436",
     logicSeal: "493",
     firstDate: "20250214",

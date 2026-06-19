@@ -2,7 +2,7 @@
 import { config } from "./config.js";
 import { state, save, isSolved, markSolved, grantReward, earnFragment, allFragments, reset } from "./state.js";
 import { h, $, toast, modal, openHints, renderFragbar, showHud } from "./ui.js";
-import { sfx, ensureAudio } from "./audio.js";
+import { sfx, ensureAudio, startMusic, setMusicMuted } from "./audio.js";
 import { PUZZLES } from "./puzzles/index.js";
 import { SCENES, PATHS, PALACE, M5_ORDER, COVER, HUB, FINALE, fmtDate } from "./scenes.js";
 
@@ -40,8 +40,8 @@ function renderCover() {
     h("div", { class: "sub" }, COVER.sub),
     h("div", { class: "panel", style: { textAlign: "left", marginBottom: "22px" } },
       ...COVER.lines.map(t => h("p", { class: "story", html: t }))),
-    h("button", { class: "btn", onclick: () => { ensureAudio(); state.started = true; save(); go("hub"); } }, COVER.begin),
-    state.started ? h("button", { class: "btn ghost", style: { marginTop: "10px" }, onclick: () => go("hub") }, "繼續上次進度") : null,
+    h("button", { class: "btn", onclick: () => { ensureAudio(); startMusic(); state.started = true; save(); go("hub"); } }, COVER.begin),
+    state.started ? h("button", { class: "btn ghost", style: { marginTop: "10px" }, onclick: () => { ensureAudio(); startMusic(); go("hub"); } }, "繼續上次進度") : null,
   ));
   renderDev();
 }
@@ -261,10 +261,21 @@ $("#hud-mute").addEventListener("click", (e) => {
   state.muted = !state.muted; save();
   e.currentTarget.textContent = state.muted ? "🔇" : "♪";
   e.currentTarget.style.opacity = state.muted ? .5 : 1;
+  setMusicMuted(state.muted);
   if (!state.muted) sfx.tap();
 });
 if (state.muted) { $("#hud-mute").textContent = "🔇"; $("#hud-mute").style.opacity = .5; }
 
 /* ---------- 啟動 ---------- */
 if (DEV) { window.__solve = onSolve; window.__state = state; window.__go = go; }
+
+/* 首次互動保險：不論從哪個頁面進入，第一次點擊／按鍵即啟動音樂 */
+function kickstartAudio() {
+  ensureAudio(); startMusic();
+  document.removeEventListener("pointerdown", kickstartAudio);
+  document.removeEventListener("keydown", kickstartAudio);
+}
+document.addEventListener("pointerdown", kickstartAudio);
+document.addEventListener("keydown", kickstartAudio);
+
 route();
